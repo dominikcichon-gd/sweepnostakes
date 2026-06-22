@@ -1,0 +1,14 @@
+node_modules/
+server/public/
+data/
+.env
+*.log
+.DS_Store
+
+# Local-only: the Cloudflare tunnel binary (38MB) and agent/editor config
+bin/
+.claude/
+
+# Original prototype + build spec — kept locally, not published
+WorldCupSweepstakes.jsx
+BUILD_PROMPT.md

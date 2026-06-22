@@ -1,0 +1,68 @@
+name: Update results & deploy to Pages
+
+# Runs on a schedule (auto-fetch group results), on every push to main
+# (publishes source or manual data.json edits), and on demand.
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 min (GitHub cron is best-effort)
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# contents:write lets the bot commit the refreshed data.json; pages/id-token
+# are required by the official Pages deploy actions.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Never run two deploys at once; let an in-flight one finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Fetch latest group results
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: node scripts/update-data.js
+
+      - name: Commit refreshed data.json (if changed)
+        run: |
+          if ! git diff --quiet -- client/public/data.json; then
+            git config user.name "sweepstakes-bot"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add client/public/data.json
+            git commit -m "Auto-update results [skip ci]"
+            git push
+          else
+            echo "No data.json changes."
+          fi
+
+      - name: Build static site
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: server/public
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

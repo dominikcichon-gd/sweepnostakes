@@ -1,0 +1,27 @@
+{
+  "name": "wc2026-sweepstakes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "World Cup 2026 office sweepstakes — static React/Vite site on GitHub Pages, with a scheduled GitHub Action that auto-fetches group results into data.json. (Legacy Express+SQLite server kept for optional local use.)",
+  "scripts": {
+    "build": "vite build",
+    "poll": "node scripts/update-data.js",
+    "preview": "vite preview",
+    "dev:client": "vite",
+    "start": "node server/index.js",
+    "dev:server": "node --watch server/index.js",
+    "postinstall": "node scripts/ensure-env.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^6.0.7"
+  }
+}
