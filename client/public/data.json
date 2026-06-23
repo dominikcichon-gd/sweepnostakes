@@ -519,15 +519,19 @@
       "K_0_2": {
         "a": 5,
         "b": 0
+      },
+      "L_2_3": {
+        "a": 0,
+        "b": 0
       }
     },
     "koScores": {}
   },
   "meta": {
-    "lastFetchAt": "2026-06-23T21:21:42.914Z",
+    "lastFetchAt": "2026-06-23T22:50:02.364Z",
     "ok": true,
-    "message": "No new group results · worldcup26.ir +0 · football-data.org backup off (no token) · 45/72 fixtures recorded.",
-    "updated": 0,
+    "message": "Updated 1 group result · worldcup26.ir +1 · football-data.org backup off (no token) · 46/72 fixtures recorded.",
+    "updated": 1,
     "mismatches": []
   }
 }
