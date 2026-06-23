@@ -520,10 +520,10 @@
     "koScores": {}
   },
   "meta": {
-    "lastFetchAt": "2026-06-23T05:47:29.515Z",
+    "lastFetchAt": "2026-06-23T09:57:17.245Z",
     "ok": true,
-    "message": "Updated 2 group results · worldcup26.ir +2 · football-data.org backup off (no token) · 44/72 fixtures recorded.",
-    "updated": 2,
+    "message": "No new group results · worldcup26.ir +0 · football-data.org backup off (no token) · 44/72 fixtures recorded.",
+    "updated": 0,
     "mismatches": []
   }
 }
