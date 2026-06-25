@@ -555,15 +555,23 @@
       "A_2_3": {
         "a": 1,
         "b": 0
+      },
+      "E_0_3": {
+        "a": 2,
+        "b": 0
+      },
+      "E_1_2": {
+        "a": 2,
+        "b": 1
       }
     },
     "koScores": {}
   },
   "meta": {
-    "lastFetchAt": "2026-06-25T21:19:55.496Z",
+    "lastFetchAt": "2026-06-25T22:58:42.573Z",
     "ok": true,
-    "message": "No new group results · worldcup26.ir +0 · football-data.org backup off (no token) · 54/72 fixtures recorded.",
-    "updated": 0,
+    "message": "Updated 2 group results · worldcup26.ir +2 · football-data.org backup off (no token) · 56/72 fixtures recorded.",
+    "updated": 2,
     "mismatches": []
   }
 }
