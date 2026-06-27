@@ -587,15 +587,31 @@
       "I_0_2": {
         "a": 1,
         "b": 4
+      },
+      "G_1_3": {
+        "a": 1,
+        "b": 1
+      },
+      "H_0_2": {
+        "a": 0,
+        "b": 0
+      },
+      "H_1_3": {
+        "a": 0,
+        "b": 1
+      },
+      "G_0_2": {
+        "a": 1,
+        "b": 5
       }
     },
     "koScores": {}
   },
   "meta": {
-    "lastFetchAt": "2026-06-27T05:33:22.218Z",
-    "ok": false,
-    "message": "Both sources unavailable (worldcup26.ir failed (fetch failed); football-data.org backup off (no token)). Keeping last good data.",
-    "updated": 0,
+    "lastFetchAt": "2026-06-27T08:20:13.051Z",
+    "ok": true,
+    "message": "Updated 4 group results · worldcup26.ir +4 · football-data.org backup off (no token) · 66/72 fixtures recorded.",
+    "updated": 4,
     "mismatches": []
   }
 }
