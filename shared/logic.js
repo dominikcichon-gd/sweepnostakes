@@ -1,6 +1,11 @@
 /* Pure data + logic, copied verbatim from the WorldCupSweepstakes.jsx prototype.
    Shared by the Express server (results mapping) and the React client (display).
-   No React, no storage, no network here. */
+   No React, no storage, no network here.
+
+   The knockout bracket follows FIFA's official 2026 template (slots + third-place
+   allocation live in fifa-bracket.js), not a re-seeding. */
+
+import { R32_ORDER, KO_FIFA, thirdAllocation } from "./fifa-bracket.js";
 
 /* ----------------------------- Roster + flags ----------------------------- */
 export const FLAGS = {
@@ -184,42 +189,53 @@ export function computeAll(state) {
   const groupStageDone = allAssigned && GROUPS.every(G => groups[G].complete);
   const progress = totalSlots ? filledSlots / totalSlots : 0;
 
-  // Seeding (only when the group stage is fully played)
+  // Official FIFA bracket (only once the group stage is fully played).
   let seeds = null, bracket = null, koWins = {}, champion = null, runnerUp = null, thirdPlaceTeam = null;
   teams.forEach(t => { koWins[t.id] = []; });
 
   if (groupStageDone) {
-    const winners = GROUPS.map(G => groups[G].standings[0]);
-    const runners = GROUPS.map(G => groups[G].standings[1]);
-    const thirds = rankThirds(GROUPS.map(G => groups[G].standings[2])).slice(0, 8);
-    const byRank = arr => [...arr].sort((x, y) =>
-      (y.pts - x.pts) || ((y.gf - y.ga) - (x.gf - x.ga)) || (y.gf - x.gf) ||
-      x.team.country.localeCompare(y.team.country)).map(s => s.team);
-    seeds = [...byRank(winners), ...byRank(runners), ...thirds.map(s => s.team)]; // 32
+    const winnerOf = G => groups[G].standings[0].team;
+    const runnerOf = G => groups[G].standings[1].team;
+    const thirdOf = G => groups[G].standings[2].team;
+
+    // The eight groups whose third-placed team qualified, and FIFA's official
+    // allocation of those thirds to the group winners they face.
+    const qualThirdGroups = rankThirds(GROUPS.map(G => groups[G].standings[2]))
+      .slice(0, 8).map(s => s.team.group);
+    const alloc = thirdAllocation(qualThirdGroups); // { winnerGroup: thirdGroup } | null
+
+    const resolveSlot = (slot) => {
+      if (slot.win) return winnerOf(slot.win);
+      if (slot.run) return runnerOf(slot.run);
+      if (slot.thirdFor) { const tg = alloc && alloc[slot.thirdFor]; return tg ? thirdOf(tg) : null; }
+      return null;
+    };
 
     const rounds = { R32: [], R16: [], QF: [], SF: [], F: [], TP: [] };
     const record = (round, w) => { if (w) koWins[w.id].push(round); };
 
-    for (let k = 0; k < 16; k++) {
-      const m = resolveMatch(seeds[k], seeds[31 - k], state.koScores[`R32_${k}`]);
-      m.key = `R32_${k}`; rounds.R32.push(m); record("R32", m.winner);
-    }
+    // Round of 32 in official bracket order; later rounds progress pairwise,
+    // matching FIFA's bracket adjacency.
+    R32_ORDER.forEach((def, k) => {
+      const m = resolveMatch(resolveSlot(def.a), resolveSlot(def.b), state.koScores[`R32_${k}`]);
+      m.key = `R32_${k}`; m.fifaNo = def.no; rounds.R32.push(m); record("R32", m.winner);
+    });
     for (let j = 0; j < 8; j++) {
       const m = resolveMatch(rounds.R32[2 * j].winner, rounds.R32[2 * j + 1].winner, state.koScores[`R16_${j}`]);
-      m.key = `R16_${j}`; rounds.R16.push(m); record("R16", m.winner);
+      m.key = `R16_${j}`; m.fifaNo = KO_FIFA.R16[j]; rounds.R16.push(m); record("R16", m.winner);
     }
     for (let j = 0; j < 4; j++) {
       const m = resolveMatch(rounds.R16[2 * j].winner, rounds.R16[2 * j + 1].winner, state.koScores[`QF_${j}`]);
-      m.key = `QF_${j}`; rounds.QF.push(m); record("QF", m.winner);
+      m.key = `QF_${j}`; m.fifaNo = KO_FIFA.QF[j]; rounds.QF.push(m); record("QF", m.winner);
     }
     for (let j = 0; j < 2; j++) {
       const m = resolveMatch(rounds.QF[2 * j].winner, rounds.QF[2 * j + 1].winner, state.koScores[`SF_${j}`]);
-      m.key = `SF_${j}`; rounds.SF.push(m); record("SF", m.winner);
+      m.key = `SF_${j}`; m.fifaNo = KO_FIFA.SF[j]; rounds.SF.push(m); record("SF", m.winner);
     }
     const fin = resolveMatch(rounds.SF[0].winner, rounds.SF[1].winner, state.koScores["F_0"]);
-    fin.key = "F_0"; rounds.F.push(fin); record("F", fin.winner);
+    fin.key = "F_0"; fin.fifaNo = KO_FIFA.F[0]; rounds.F.push(fin); record("F", fin.winner);
     const tp = resolveMatch(rounds.SF[0].loser, rounds.SF[1].loser, state.koScores["TP_0"]);
-    tp.key = "TP_0"; rounds.TP.push(tp); record("TP", tp.winner);
+    tp.key = "TP_0"; tp.fifaNo = KO_FIFA.TP[0]; rounds.TP.push(tp); record("TP", tp.winner);
 
     bracket = rounds;
     champion = fin.winner;

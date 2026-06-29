@@ -3,6 +3,7 @@ import {
   GROUPS, KO_LABEL, num, computeAll, defaultState,
   parseResultLine, bestMatch, acceptMatch,
 } from "../../shared/logic.js";
+import { SCHEDULE } from "../../shared/fifa-bracket.js";
 
 /* ---------------------------------------------------------------------------
  * Static hosting model (GitHub Pages):
@@ -559,6 +560,7 @@ function Groups({ data, editing, setGroupScore, goSetup, meta, pasteText, setPas
 /* -------------------------------- Bracket ---------------------------------- */
 function KoMatch({ m, editing, setKoScore }) {
   const tie = m.home && m.away && m.a != null && m.b != null && m.a === m.b;
+  const sched = SCHEDULE[m.fifaNo];
   const row = (team, side, score, pen) => (
     <div className={"koRow" + (m.winner && team && m.winner.id === team.id ? " win" : "") + (!team ? " tbd" : "")}>
       <span className="koTeam">{team ? <><Flag t={team} /> <span className="tName">{team.country}</span></> : <span className="tbdText">TBD</span>}</span>
@@ -568,8 +570,17 @@ function KoMatch({ m, editing, setKoScore }) {
   );
   return (
     <div className="koMatch">
-      {row(m.home, "a", m.a, m.pa)}
-      {row(m.away, "b", m.b, m.pb)}
+      {sched && (
+        <div className="koMeta">
+          <span className="koNo">Match {m.fifaNo}</span>
+          <span className="koWhen">{sched.when}</span>
+          {sched.venue && <span className="koVenue">{sched.venue}</span>}
+        </div>
+      )}
+      <div className="koRows">
+        {row(m.home, "a", m.a, m.pa)}
+        {row(m.away, "b", m.b, m.pb)}
+      </div>
       {tie && <div className="koHint">penalties →</div>}
     </div>
   );
@@ -591,16 +602,18 @@ function Bracket({ data, editing, setKoScore }) {
     <section>
       <div className="sectionHead">
         <h2 className="display sectionTitle">Knockout</h2>
-        <span className="hint">Seeded by group finish (1v32, 2v31, …) — a fair seeding, not FIFA's official bracket template.</span>
+        <span className="hint">FIFA's official 2026 bracket — dates &amp; kickoffs in UK time (BST).</span>
       </div>
-      <p className="fetchNote">Knockout scores are entered by the organiser (the auto-fetch only covers the group stage, because our bracket is seeded differently from the real draw). Paste works too — use the box on the Groups tab, e.g. <code>Brazil 1-1 Spain (4-3 pens)</code>, and it lands on the right match here. Remember to <b>Publish</b> to share.</p>
+      <p className="fetchNote">Knockout results are entered by the organiser — the auto-fetch covers the group stage only. Paste also works: use the box on the Groups tab, e.g. <code>Brazil 1-1 Spain (4-3 pens)</code>, and it lands on the right match here. Remember to <b>Publish</b> to share.</p>
 
       <div className="bracketScroll">
         <div className="bracket">
           {cols.map(([r, matches]) => (
             <div className={"koCol col-" + r} key={r}>
               <div className="koColHead display">{KO_LABEL[r]}</div>
-              {matches.map(m => <KoMatch key={m.key} m={m} editing={editing} setKoScore={setKoScore} />)}
+              <div className="koColBody">
+                {matches.map(m => <KoMatch key={m.key} m={m} editing={editing} setKoScore={setKoScore} />)}
+              </div>
             </div>
           ))}
         </div>
@@ -609,7 +622,7 @@ function Bracket({ data, editing, setKoScore }) {
       <div className="thirdPlace">
         <div className="koColHead display">Third-place playoff</div>
         <div className="bracket">
-          <div className="koCol"><KoMatch m={b.TP[0]} editing={editing} setKoScore={setKoScore} /></div>
+          <div className="koCol"><div className="koColBody"><KoMatch m={b.TP[0]} editing={editing} setKoScore={setKoScore} /></div></div>
         </div>
       </div>
     </section>
@@ -847,18 +860,21 @@ function Style() {
 .wc .scoreStatic{display:inline-grid;place-items:center;min-width:24px;height:30px;font-size:14px;font-weight:700;
   font-variant-numeric:tabular-nums;color:var(--ink)}
 
-/* bracket */
+/* bracket — left-to-right rounds; each round auto-centres its matches so the
+   tree narrows toward the final (no fragile fixed offsets) */
 .wc .bracketScroll{overflow-x:auto;padding-bottom:8px}
-.wc .bracket{display:flex;gap:16px;min-width:max-content;align-items:flex-start}
-.wc .koCol{display:flex;flex-direction:column;gap:12px;min-width:188px}
-.wc .col-R16{justify-content:space-around;padding-top:24px}
-.wc .col-QF{justify-content:space-around;padding-top:64px}
-.wc .col-SF{justify-content:space-around;padding-top:120px}
-.wc .col-F{justify-content:space-around;padding-top:200px}
-.wc .koColHead{font-size:13px;color:var(--muted);letter-spacing:.06em;margin-bottom:2px}
+.wc .bracket{display:flex;gap:18px;min-width:max-content;align-items:stretch}
+.wc .koCol{display:flex;flex-direction:column;min-width:212px}
+.wc .koColHead{font-size:13px;color:var(--muted);letter-spacing:.06em;margin-bottom:10px;text-align:center}
+.wc .koColBody{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:14px}
 .wc .koMatch{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.wc .koMeta{display:flex;align-items:center;gap:8px;padding:5px 9px;background:var(--panel2);
+  border-bottom:1px solid var(--line);font-size:10px;color:var(--muted2);line-height:1.3}
+.wc .koNo{font-weight:700;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
+.wc .koWhen{color:var(--blue);white-space:nowrap}
+.wc .koVenue{margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wc .koRow{display:flex;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid var(--line)}
-.wc .koRow:last-child{border-bottom:none}
+.wc .koRows .koRow:last-child{border-bottom:none}
 .wc .koRow.win{background:linear-gradient(90deg, rgba(52,211,153,.16), transparent)}
 .wc .koRow.win .tName{color:var(--pitch)}
 .wc .koTeam{flex:1;display:flex;align-items:center;gap:6px;font-size:12px;min-width:0}
@@ -868,6 +884,7 @@ function Style() {
 .wc .koRow .scoreStatic{min-width:20px;height:26px;font-size:13px}
 .wc .koHint{font-size:9px;color:var(--muted2);text-align:right;padding:2px 9px 4px;letter-spacing:.1em;text-transform:uppercase}
 .wc .thirdPlace{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+.wc .thirdPlace .koCol{min-width:240px}
 
 /* empty states */
 .wc .empty{text-align:center;padding:50px 16px;background:var(--panel);border:1px dashed var(--line2);border-radius:var(--rad)}
