@@ -673,11 +673,23 @@
       "R32_10": {
         "a": 2,
         "b": 0
+      },
+      "R32_5": {
+        "a": 3,
+        "b": 0
+      },
+      "R32_4": {
+        "a": 2,
+        "b": 1
+      },
+      "R32_14": {
+        "a": 2,
+        "b": 0
       }
     }
   },
   "meta": {
-    "lastFetchAt": "2026-07-03T05:00:29.627Z",
+    "lastFetchAt": "2026-07-02T23:16:31.724Z",
     "ok": true,
     "message": "No new group results · worldcup26.ir +0 · football-data.org backup off (no token) · 72/72 fixtures recorded.",
     "updated": 0,
