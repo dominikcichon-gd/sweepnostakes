@@ -689,9 +689,9 @@
     }
   },
   "meta": {
-    "lastFetchAt": "2026-07-03T15:31:13.549Z",
-    "ok": false,
-    "message": "Both sources unavailable (worldcup26.ir failed (GET https://worldcup26.ir/get/teams -> HTTP 502); football-data.org backup off (no token)). Keeping last good data.",
+    "lastFetchAt": "2026-07-03T17:01:58.631Z",
+    "ok": true,
+    "message": "No new group results · worldcup26.ir +0 · football-data.org backup off (no token) · 72/72 fixtures recorded.",
     "updated": 0,
     "mismatches": []
   }
