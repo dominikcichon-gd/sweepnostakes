@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
@@ -66,4 +66,15 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deploy
+        uses: actions/deploy-pages@v4
+
+      # GitHub's Pages backend intermittently returns "Deployment failed, try
+      # again later" — a transient error unrelated to the build. Pause and make
+      # one more attempt (the uploaded artifact is reused) so a flaky deploy
+      # doesn't fail the whole run.
+      - name: Pause before retrying a transient deploy failure
+        if: failure() && steps.deploy.conclusion == 'failure'
+        run: sleep 30
+      - name: Retry GitHub Pages deploy
+        if: failure() && steps.deploy.conclusion == 'failure'
         uses: actions/deploy-pages@v4
