@@ -28,23 +28,6 @@ function Sprite({ spec, className, title }) {
   );
 }
 
-/* --------------------------------- trophy --------------------------------- */
-function Trophy({ className }) {
-  const G = "#ffd24a", GD = "#d9a521", O = "#7a5a12";
-  const px = [];
-  const p = (x, y, c) => px.push(<rect key={x + "_" + y + c} x={x} y={y} width="1" height="1" fill={c} />);
-  // cup
-  for (let x = 3; x <= 8; x++) { p(x, 1, O); }
-  for (let y = 2; y <= 4; y++) for (let x = 3; x <= 8; x++) p(x, y, (x === 8 ? GD : G));
-  p(2, 2, G); p(9, 2, G); p(2, 3, GD); p(9, 3, GD);           // handles
-  p(4, 5, G); p(5, 5, G); p(6, 5, GD); p(7, 5, GD);
-  p(5, 6, GD); p(6, 6, GD);                                   // stem
-  for (let x = 4; x <= 7; x++) p(x, 7, O);                    // base
-  return (
-    <svg className={className} viewBox="0 0 12 8" shapeRendering="crispEdges" aria-hidden="true">{px}</svg>
-  );
-}
-
 /* -------------------------------- confetti -------------------------------- */
 function useConfetti(n) {
   return useMemo(() => {
@@ -67,7 +50,6 @@ function Place({ w, points, tier }) {
     <div className={"place place--" + tier}>
       <figure className="figure">
         <div className={"charWrap anim-" + w.anim}>
-          {w.anim === "trophy" && <Trophy className="trophySprite anim-trophybob" />}
           <Sprite spec={w.sprite} className="charSprite" />
           {w.anim === "shake" && (
             <span className="tears" aria-hidden="true"><i /><i /></span>
@@ -209,11 +191,9 @@ function WinnersStyle() {
 
 /* sprites */
 .winners .charWrap{ position:relative; display:flex; justify-content:center; align-items:flex-end; }
-.winners .charSprite{ width:76px; height:114px; display:block; }
-.winners .place--first .charSprite{ width:88px; height:132px; }
-.winners .loser .charSprite{ width:70px; height:105px; filter:saturate(.9); }
-.winners .trophySprite{ position:absolute; top:-6px; right:-2px; width:34px; height:auto; z-index:3;
-  filter:drop-shadow(0 0 4px rgba(255,210,74,.6)); }
+.winners .charSprite{ width:92px; height:auto; display:block; image-rendering:pixelated; }
+.winners .place--first .charSprite{ width:112px; }
+.winners .loser .charSprite{ width:84px; filter:saturate(.95); }
 
 /* tears */
 .winners .tears{ position:absolute; top:40%; left:0; right:0; height:0; }
@@ -277,8 +257,8 @@ function WinnersStyle() {
 }
 @media(max-width:480px){
   .winners .podiums{ gap:2px; }
-  .winners .charSprite{ width:58px; height:87px; }
-  .winners .place--first .charSprite{ width:68px; height:102px; }
+  .winners .charSprite{ width:70px; }
+  .winners .place--first .charSprite{ width:86px; }
   .winners .podium--first{ height:80px } .winners .podium--second{ height:58px } .winners .podium--third{ height:42px }
   .winners .podiumNum{ font-size:24px } .winners .podium--first .podiumNum{ font-size:30px }
   .winners .labName{ font-size:13px } .winners .labCountry{ font-size:11px }
