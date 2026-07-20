@@ -4,6 +4,7 @@ import {
   parseResultLine, bestMatch, acceptMatch,
 } from "../../shared/logic.js";
 import { SCHEDULE } from "../../shared/fifa-bracket.js";
+import Winners from "./Winners.jsx";
 
 /* ---------------------------------------------------------------------------
  * Static hosting model (GitHub Pages):
@@ -70,7 +71,7 @@ function ScoreInput({ value, onChange, ariaLabel, editable }) {
 export default function App() {
   const [state, setState] = useState(null);
   const [meta, setMeta] = useState(null);
-  const [tab, setTab] = useState("leaderboard");
+  const [tab, setTab] = useState("winners");
   const [loaded, setLoaded] = useState(false);
   const [toast, setToast] = useState(null);
   const [review, setReview] = useState(null);
@@ -252,6 +253,7 @@ export default function App() {
   }
 
   const tabs = [
+    ["winners", "Winners"],
     ["leaderboard", "Leaderboard"],
     ["groups", "Groups"],
     ["bracket", "Knockout"],
@@ -313,6 +315,7 @@ export default function App() {
       )}
 
       <main className="main">
+        {tab === "winners" && <Winners data={data} />}
         {tab === "leaderboard" && <Leaderboard data={data} />}
         {tab === "groups" && (
           <Groups data={data} editing={editing} setGroupScore={setGroupScore}
