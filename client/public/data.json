@@ -769,9 +769,9 @@
     }
   },
   "meta": {
-    "lastFetchAt": "2026-08-30T07:30:49.385Z",
+    "lastFetchAt": "2026-08-30T13:18:44.396Z",
     "ok": false,
-    "message": "Both sources unavailable (worldcup26.ir failed (GET https://worldcup26.ir/get/games -> HTTP 404); football-data.org backup off (no token)). Keeping last good data.",
+    "message": "Both sources unavailable (worldcup26.ir failed (GET https://worldcup26.ir/get/teams -> HTTP 404); football-data.org backup off (no token)). Keeping last good data.",
     "updated": 0,
     "mismatches": []
   }
